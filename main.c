@@ -13,7 +13,7 @@ typedef struct {
 
 
 void* philosophize(void* args) {
-	//TODO
+	Input* dta = (Input*)arg;
 }
 
 int main(int argc, char *argv) {
