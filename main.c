@@ -73,12 +73,11 @@ void devolver(int i) {
 
 	pthread_mutex_lock(&m);
 
+	printf("%d -> largou garfo %d e %d\n", i, i, dir);
 	estado[i] = PENSANDO;
-	printf("%d -> pensando\n", i);
-
 	testar(esq);
 	testar(dir);
-
+	printf("%d -> pensando\n", i);
 	pthread_mutex_unlock(&m);
 }
 
@@ -87,9 +86,11 @@ void pegar(int i) {
 
     estado[i] = FAMINTO;
     printf("%d -> faminto\n", i);
-
+	int esq = (i + n - 1) % n;
+    int dir = (i + 1) % n;
+	printf("%d -> pegou garfo %d e %d\n", i, i, dir);
     testar(i);
-
+	
     pthread_mutex_unlock(&m);
     sem_wait(&s[i]);
 }
