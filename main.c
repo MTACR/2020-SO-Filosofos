@@ -43,7 +43,7 @@ int main(int argc, char *argv) {
 	pthread_mutex_init(&m, NULL);
 
 	for (int i = 0; i < n; i++) {
-	    sem_init(&s[i], 0, n);
+	    sem_init(&s[i], 0, 0);
 	    estado[i] = PENSANDO;
     }
 
@@ -60,7 +60,7 @@ void* filosofo(void* args) {
     int i = *(int*) args;
 
 	while (!fim) {
-	    printf("%d está pensando\n", i);
+	    printf("%d -> pensando\n", i);
 		esperar();
 		pegar(i);
         esperar();
@@ -87,7 +87,7 @@ void devolver(int i) {
 	pthread_mutex_lock(&m);
 
 	estado[i] = PENSANDO;
-	printf("%d está pensando\n", i);
+	printf("%d -> pensando\n", i);
 
 	testar(esq);
 	testar(dir);
@@ -99,7 +99,7 @@ void pegar(int i) {
     pthread_mutex_lock(&m);
 
     estado[i] = FAMINTO;
-    printf("%d está faminto\n", i);
+    printf("%d -> faminto\n", i);
 
     testar(i);
 
@@ -109,7 +109,8 @@ void pegar(int i) {
 
 void esperar() {
 	srand(time(NULL));
-	usleep(1 + rand() % 10000000);
+	//usleep(1 + rand() % 10000000);
+	usleep(1);
 }
 
 void testar(int i) {
@@ -117,9 +118,15 @@ void testar(int i) {
     int dir = (i + 1) % n;
 
     if (estado[i] == FAMINTO && estado[esq] != COMENDO && estado[dir] != COMENDO) {
+
         estado[i] = COMENDO;
-        printf("%d está comendo\n", i);
-        printf("macarrão = %d\n", macarrao);
+        macarrao--;
+
+        if (macarrao == 0)
+            fim = 1;
+
+        printf("%d -> comendo (%d)\n", i, macarrao);
+
         sem_post(&s[i]);
    }
 }
