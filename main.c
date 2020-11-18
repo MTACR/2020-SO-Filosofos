@@ -33,7 +33,7 @@ int main(int argc, char *argv) {
 	}*/
 
 	n = 3;
-	macarrao = 15;
+	macarrao = 2;
     fim = 0;
 
 	pthread_t* filosofos = (pthread_t*) malloc(n * sizeof(pthread_t));
@@ -65,6 +65,7 @@ void* filosofo(void* args) {
         esperar();
         devolver(i);
 	}
+	printf("%d -> saiu\n", i);
 }
 
 void devolver(int i) {
@@ -72,13 +73,13 @@ void devolver(int i) {
     int dir = (i + 1) % n;
 
 	pthread_mutex_lock(&m);
-
-	printf("%d -> largou garfo %d e %d\n", i, i, dir);
+	if (estado[i] == COMENDO) printf("%d -> largou garfo %d e %d\n", i, i, dir);
 	estado[i] = PENSANDO;
+	printf("%d -> pensando\n", i);
 	testar(esq);
 	testar(dir);
-	printf("%d -> pensando\n", i);
 	pthread_mutex_unlock(&m);
+	
 }
 
 void pegar(int i) {
@@ -86,19 +87,15 @@ void pegar(int i) {
 
     estado[i] = FAMINTO;
     printf("%d -> faminto\n", i);
-	int esq = (i + n - 1) % n;
-    int dir = (i + 1) % n;
-	printf("%d -> pegou garfo %d e %d\n", i, i, dir);
     testar(i);
-	
     pthread_mutex_unlock(&m);
     sem_wait(&s[i]);
 }
 
 void esperar() {
 	srand(time(NULL));
-	//usleep(1 + rand() % 10000000);
-	usleep(1);
+	usleep(1 + rand() % 1000000);
+	//usleep(1);
 }
 
 void testar(int i) {
@@ -106,17 +103,18 @@ void testar(int i) {
     int dir = (i + 1) % n;
 
     if (estado[i] == FAMINTO && estado[esq] != COMENDO && estado[dir] != COMENDO) {
-
+		
         if (macarrao > 0) {
-            printf("%d -> comendo (%d)\n", i, macarrao);
-
             estado[i] = COMENDO;
+			printf("%d -> pegou garfo %d e %d\n", i, i, dir);
+			printf("%d -> comendo (%d)\n", i, macarrao);
             macarrao--;
-
-            if (macarrao == 0)
-                fim = 1;
+			if (macarrao == 0){
+				printf("ACABOU O MACARRAO  :(\n");
+				fim = 1;
+			}
         }
-
+		
         sem_post(&s[i]);
    }
 }
