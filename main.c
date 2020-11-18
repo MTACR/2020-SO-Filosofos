@@ -25,15 +25,15 @@ void pegar(int i);
 void devolver(int i);
 void testar(int i);
 
-int main(int argc, char *argv) {
+int main(int argc, char *argv[]) {
 
-	/*if (argc != 3) {
-		printf("Wrong args");
+	if (argc != 3) {
+		printf("Wrong args\n");
 		exit(1);
-	}*/
+	}
 
-	n = 3;
-	macarrao = 2;
+	n = atoi(argv[1]);
+	macarrao = atoi(argv[2]);
     fim = 0;
 
 	pthread_t* filosofos = (pthread_t*) malloc(n * sizeof(pthread_t));
@@ -109,7 +109,8 @@ void testar(int i) {
 			printf("%d -> pegou garfo %d e %d\n", i, i, dir);
 			printf("%d -> comendo (%d)\n", i, macarrao);
             macarrao--;
-			if (macarrao == 0){
+
+			if (macarrao == 0) {
 				printf("ACABOU O MACARRAO  :(\n");
 				fim = 1;
 			}
