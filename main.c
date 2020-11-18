@@ -32,7 +32,7 @@ int main(int argc, char *argv) {
 		exit(1);
 	}*/
 
-	n = 5;
+	n = 3;
 	macarrao = 15;
     fim = 0;
 
@@ -60,7 +60,6 @@ void* filosofo(void* args) {
     int i = *(int*) args;
 
 	while (!fim) {
-	    printf("%d -> pensando\n", i);
 		esperar();
 		pegar(i);
         esperar();
@@ -116,7 +115,7 @@ void testar(int i) {
             if (macarrao == 0)
                 fim = 1;
         }
-        
+
         sem_post(&s[i]);
    }
 }
