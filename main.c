@@ -119,6 +119,7 @@ void testar(int i) {
     if (estado[i] == FAMINTO && estado[esq] != COMENDO && estado[dir] != COMENDO) {
         estado[i] = COMENDO;
         printf("%d está comendo\n", i);
+        printf("macarrão = %d\n", macarrao);
         sem_post(&s[i]);
    }
 }
