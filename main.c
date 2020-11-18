@@ -17,9 +17,13 @@ int *estado;
 
 int macarrao;
 int fim;
+int n;
 
 void* filosofo(void* args);
 void esperar();
+void pegar(int i);
+void devolver(int i);
+void testar(int i);
 
 int main(int argc, char *argv) {
 
@@ -28,7 +32,7 @@ int main(int argc, char *argv) {
 		exit(1);
 	}*/
 
-	int n = 3;
+	n = 5;
 	macarrao = 15;
     fim = 0;
 
@@ -58,23 +62,63 @@ void* filosofo(void* args) {
 	while (!fim) {
 	    printf("%d está pensando\n", i);
 		esperar();
+		pegar(i);
+        esperar();
+        devolver(i);
+		//sem_wait(&s[i]);
+		//pthread_mutex_lock(&m);
 
-		sem_wait(&s[i]);
-		pthread_mutex_lock(&m);
+		//macarrao--;
 
-		macarrao--;
+		//if (macarrao == 0) {
+		    //fim = 1;
+		    //sem_post(&s[i]);
+		//}
 
-		if (macarrao == 0) {
-		    fim = 1;
-		    sem_post(&s[i]);
-		}
-
-		pthread_mutex_unlock(&m);
-		sem_post(&s[i]);
+		//pthread_mutex_unlock(&m);
+		//sem_post(&s[i]);
 	}
+}
+
+void devolver(int i) {
+    int esq = (i + n - 1) % n;
+    int dir = (i + 1) % n;
+
+	pthread_mutex_lock(&m);
+
+	estado[i] = PENSANDO;
+	printf("%d está pensando\n", i);
+
+	testar(esq);
+	testar(dir);
+
+	pthread_mutex_unlock(&m);
+}
+
+void pegar(int i) {
+    pthread_mutex_lock(&m);
+
+    estado[i] = FAMINTO;
+    printf("%d está faminto\n", i);
+
+    testar(i);
+
+    pthread_mutex_unlock(&m);
+    sem_wait(&s[i]);
 }
 
 void esperar() {
 	srand(time(NULL));
-	usleep(1 + rand() % (1000));
+	usleep(1 + rand() % 10000000);
+}
+
+void testar(int i) {
+    int esq = (i + n - 1) % n;
+    int dir = (i + 1) % n;
+
+    if (estado[i] == FAMINTO && estado[esq] != COMENDO && estado[dir] != COMENDO) {
+        estado[i] = COMENDO;
+        printf("%d está comendo\n", i);
+        sem_post(&s[i]);
+   }
 }
