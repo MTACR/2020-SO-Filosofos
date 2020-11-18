@@ -65,18 +65,6 @@ void* filosofo(void* args) {
 		pegar(i);
         esperar();
         devolver(i);
-		//sem_wait(&s[i]);
-		//pthread_mutex_lock(&m);
-
-		//macarrao--;
-
-		//if (macarrao == 0) {
-		    //fim = 1;
-		    //sem_post(&s[i]);
-		//}
-
-		//pthread_mutex_unlock(&m);
-		//sem_post(&s[i]);
 	}
 }
 
@@ -119,14 +107,16 @@ void testar(int i) {
 
     if (estado[i] == FAMINTO && estado[esq] != COMENDO && estado[dir] != COMENDO) {
 
-        estado[i] = COMENDO;
-        macarrao--;
+        if (macarrao > 0) {
+            printf("%d -> comendo (%d)\n", i, macarrao);
 
-        if (macarrao == 0)
-            fim = 1;
+            estado[i] = COMENDO;
+            macarrao--;
 
-        printf("%d -> comendo (%d)\n", i, macarrao);
-
+            if (macarrao == 0)
+                fim = 1;
+        }
+        
         sem_post(&s[i]);
    }
 }
