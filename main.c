@@ -7,38 +7,19 @@
 
 // gcc main.c -o main -lpthread
 
-typedef struct {
-	pthread_mutex_t m;
-	sem_t pgarfos;
+#define PENSANDO 0
+#define COMENDO 1
+#define FAMINTO 2
 
-	int macarrao;
-	int fim;
-} Input;
+pthread_mutex_t m;
+sem_t *s;
+int *estado;
 
+int macarrao;
+int fim;
 
-void* philosophize(void* args) {
-	Input* dta = (Input*)args;
-
-	while (!(dta->fim)) {
-		sleep(dta->n);
-
-		sem_wait(&(dta->pgarfos));
-		sem_wait(&(dta->pgarfos));
-		pthread_mutex_lock(&(dta->m));
-
-		dta->macarrao--;
-
-		if (dta->macarrao == 0) {
-		    dta->fim = 1;
-		    sem_post(&(dta->pgarfos));
-		    sem_post(&(dta->pgarfos));
-		}
-
-		pthread_mutex_unlock(&(dta->m));
-		sem_post(&(dta->pgarfos));
-		sem_post(&(dta->pgarfos));
-	}
-}
+void* filosofo(void* args);
+void esperar();
 
 int main(int argc, char *argv) {
 
@@ -47,23 +28,52 @@ int main(int argc, char *argv) {
 		exit(1);
 	}
 
-	//int n = argv[1];
-	//int n = 2;
+	int n = argv[1];
+	macarrao = argv[2];
+    fim = 0;
 
-	pthread_t* vphil = (pthread_t*)malloc(n * sizeof(pthread_t));;
+	pthread_t* filosofos = (pthread_t*) malloc(n * sizeof(pthread_t));
+	s = (sem_t*) malloc(n * sizeof(sem_t));
+	estado = (int*) malloc(n * sizeof(int));
 
-	Input dta;
-	//dta.macarrao = argv[2];
-	//dta.macarrao = 10;
-    dta.fim = 0;
-	sem_init(&dta.pgarfos, 0, n);
-	pthread_mutex_init(&dta.m, NULL);
+	pthread_mutex_init(&m, NULL);
+
+	for (int i = 0; i < n; i++) {
+	    sem_init(&s[i], 0, n);
+	    estado[i] = PENSANDO;
+    }
 
 	for (int i = 0; i < n; i++)
-		pthread_create(&(vphil[i]), NULL, philosophize, (void*)&dta);
+		pthread_create(&filosofos[i], NULL, filosofo, (void*)&i);
 
 	for (int i = 0; i < n; i++)
-		pthread_join(vphil[i], (void*)&dta);
+		pthread_join(filosofos[i], (void*)&i);
 
 	return 0;
+}
+
+void* filosofo(void* args) {
+    int i = *(int*) args;
+
+	while (!fim) {
+		esperar();
+
+		sem_wait(&s[i]);
+		pthread_mutex_lock(&m);
+
+		macarrao--;
+
+		if (macarrao == 0) {
+		    fim = 1;
+		    sem_post(&s[i]);
+		}
+
+		pthread_mutex_unlock(&m);
+		sem_post(&s[i]);
+	}
+}
+
+void esperar() {
+	srand(time(NULL));
+	usleep(1 + rand() % (1000));
 }
