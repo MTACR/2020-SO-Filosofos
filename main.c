@@ -23,13 +23,13 @@ void esperar();
 
 int main(int argc, char *argv) {
 
-	if (argc != 3) {
+	/*if (argc != 3) {
 		printf("Wrong args");
 		exit(1);
-	}
+	}*/
 
-	int n = argv[1];
-	macarrao = argv[2];
+	int n = 3;
+	macarrao = 15;
     fim = 0;
 
 	pthread_t* filosofos = (pthread_t*) malloc(n * sizeof(pthread_t));
@@ -56,6 +56,7 @@ void* filosofo(void* args) {
     int i = *(int*) args;
 
 	while (!fim) {
+	    printf("%d está pensando\n", i);
 		esperar();
 
 		sem_wait(&s[i]);
