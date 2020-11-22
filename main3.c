@@ -123,12 +123,13 @@ void testar(int i) {
 			printf("%d -> pegou garfo %d e %d\n", i, i, dir);
 			printf("%d -> comendo (%d)\n", i, macarrao);
             macarrao--;
-			if (macarrao == 0){
+			if (macarrao == 0)
 				printf("ACABOU O MACARRAO  :(\n");
-				fim = 1;
-			}
         }
-		
+
+        if (macarrao == 0)
+            fim = 1;
+
         sem_post(&s[i]);
    }
 }
